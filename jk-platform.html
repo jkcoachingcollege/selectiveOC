@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JK Coaching College – Exam Platform</title>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Merriweather:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#1B2A5E; --navy-dark:#111C42; --navy-mid:#263580; --navy-light:#E8ECF8;
+  --gold:#F5A623; --gold-dark:#D4891A; --gold-light:#FFF3D6;
+  --bg:#F0F2F8; --border:#D0D5E8;
+  --correct:#2E7D32; --correct-bg:#E8F5E9;
+  --incorrect:#C62828; --incorrect-bg:#FFEBEE;
+  --radius:10px; --shadow:0 4px 20px rgba(27,42,94,.12);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Lato',sans-serif;background:var(--bg);color:var(--navy);min-height:100vh;}
+
+.screen{display:none;}
+.screen.active{display:flex;flex-direction:column;height:100vh;}
+
+@keyframes cardIn{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.55}}
+
+/* ── LANDING ── */
+#screen-landing{
+  background:linear-gradient(145deg,var(--navy-dark) 0%,var(--navy) 55%,var(--navy-mid) 100%);
+  align-items:center;justify-content:center;position:relative;overflow:hidden;
+}
+#screen-landing::before{content:'';position:absolute;width:600px;height:600px;border-radius:50%;
+  background:rgba(245,166,35,.07);top:-200px;right:-200px;pointer-events:none;}
+#screen-landing::after{content:'';position:absolute;width:380px;height:380px;border-radius:50%;
+  background:rgba(255,255,255,.04);bottom:-100px;left:-100px;pointer-events:none;}
+
+.landing-card{
+  background:#fff;border-radius:20px;padding:36px 44px;width:620px;max-width:96vw;
+  box-shadow:0 24px 80px rgba(0,0,0,.32);position:relative;z-index:1;
+  animation:cardIn .5s cubic-bezier(.22,.61,.36,1) both;
+  max-height:94vh;overflow-y:auto;
+}
+.logo-wrap{display:flex;align-items:center;gap:14px;margin-bottom:26px;padding-bottom:22px;border-bottom:2px solid var(--navy-light);}
+.logo-shield{background:var(--navy);color:#fff;font-weight:900;font-size:1.2rem;width:48px;height:54px;
+  display:flex;align-items:center;justify-content:center;border-radius:8px 8px 13px 13px;
+  clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);flex-shrink:0;}
+.logo-text .l1,.logo-text .l2{font-size:1.2rem;font-weight:900;color:var(--navy);line-height:1.2;}
+
+.landing-title{font-size:1.4rem;font-weight:900;margin-bottom:4px;}
+.landing-sub{font-size:.88rem;color:#666;margin-bottom:24px;}
+
+.form-label{display:block;font-weight:700;font-size:.8rem;color:var(--navy);margin-bottom:6px;
+  text-transform:uppercase;letter-spacing:.6px;}
+.form-input{width:100%;border:2px solid var(--border);border-radius:var(--radius);padding:12px 15px;
+  font-family:'Lato',sans-serif;font-size:1rem;color:var(--navy);transition:border-color .2s;margin-bottom:18px;}
+.form-input:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px rgba(27,42,94,.1);}
+
+.selector-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
+.sel-btn{border:2.5px solid var(--border);border-radius:var(--radius);padding:13px 10px;
+  text-align:center;cursor:pointer;transition:all .18s;background:#fff;user-select:none;}
+.sel-btn:hover{border-color:var(--navy);background:var(--navy-light);}
+.sel-btn.selected{border-color:var(--navy);background:var(--navy);color:#fff;}
+.sel-btn .sb-icon{font-size:1.4rem;margin-bottom:4px;}
+.sel-btn .sb-title{font-weight:900;font-size:.92rem;}
+.sel-btn .sb-sub{font-size:.7rem;opacity:.65;margin-top:2px;line-height:1.3;}
+.sel-btn.selected .sb-sub{opacity:.8;}
+
+.set-info-box{background:var(--navy-light);border:1.5px solid var(--border);border-radius:var(--radius);
+  padding:13px 15px;margin-bottom:18px;font-size:.83rem;line-height:1.65;color:#333;
+  display:none;animation:fadeIn .25s;}
+.set-info-box.visible{display:block;}
+.set-info-box strong{color:var(--navy);}
+
+/* ── TEST GRID ── */
+.test-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+.test-col{border:2.5px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s;}
+.test-col.selected{border-color:var(--navy);}
+.test-col-header{background:var(--navy-light);padding:14px 16px;text-align:center;border-bottom:1.5px solid var(--border);}
+.tc-title{font-weight:900;font-size:1rem;color:var(--navy);}
+.tc-sub{font-size:.72rem;color:#777;margin-top:2px;}
+.set-row-btn{width:100%;background:#fff;border:none;border-top:1px solid var(--border);
+  padding:12px 16px;cursor:pointer;text-align:left;transition:background .15s;
+  display:flex;flex-direction:column;gap:4px;}
+.set-row-btn:first-of-type{border-top:none;}
+.set-row-btn:hover{background:var(--navy-light);}
+.set-row-btn.selected{background:var(--navy);border-color:var(--navy);}
+.set-row-btn.selected .sr-title{color:#fff;}
+.set-row-btn.selected .sr-time{color:rgba(255,255,255,.7);}
+.sr-title{font-weight:700;font-size:.88rem;color:var(--navy);}
+.sr-time{font-size:.72rem;color:#888;}
+
+.start-btn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);
+  padding:14px;font-family:'Lato',sans-serif;font-weight:900;font-size:1rem;cursor:pointer;
+  transition:background .2s,transform .1s;letter-spacing:.4px;}
+.start-btn:hover{background:var(--navy-dark);transform:translateY(-1px);}
+.start-btn:active{transform:translateY(0);}
+.start-btn:disabled{background:#AAA;cursor:not-allowed;transform:none;}
+
+.teacher-link{display:block;text-align:center;margin-top:14px;font-size:.76rem;
+  color:rgba(255,255,255,.4);cursor:pointer;text-decoration:underline;position:relative;z-index:1;}
+.teacher-link:hover{color:rgba(255,255,255,.7);}
+
+/* ── PASSWORD MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);
+  z-index:300;align-items:center;justify-content:center;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:#fff;border-radius:16px;padding:34px 38px;width:340px;max-width:94vw;
+  text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.3);animation:cardIn .3s both;}
+.modal-box h3{font-size:1.15rem;font-weight:900;margin-bottom:7px;color:var(--navy);}
+.modal-box p{font-size:.83rem;color:#666;margin-bottom:18px;}
+.pw-input{width:100%;border:2px solid var(--border);border-radius:8px;padding:11px 14px;
+  font-size:1.4rem;text-align:center;letter-spacing:10px;font-family:'Lato',sans-serif;
+  color:var(--navy);margin-bottom:7px;}
+.pw-input:focus{outline:none;border-color:var(--navy);}
+.pw-error{color:var(--incorrect);font-size:.8rem;height:16px;margin-bottom:10px;}
+.pw-btn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:8px;
+  padding:12px;font-family:'Lato',sans-serif;font-weight:900;font-size:.92rem;cursor:pointer;}
+.pw-btn:hover{background:var(--navy-dark);}
+.pw-cancel{display:block;margin-top:9px;font-size:.78rem;color:#888;cursor:pointer;}
+.pw-cancel:hover{color:var(--navy);}
+
+/* ── EXAM HEADER ── */
+.exam-header{background:var(--navy);display:flex;align-items:center;justify-content:space-between;
+  padding:0 20px;height:58px;flex-shrink:0;box-shadow:0 2px 12px rgba(0,0,0,.2);}
+.eh-logo{display:flex;align-items:center;gap:10px;}
+.eh-shield{background:var(--gold);color:var(--navy);font-weight:900;font-size:.88rem;
+  width:32px;height:36px;display:flex;align-items:center;justify-content:center;
+  border-radius:4px 4px 9px 9px;clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);}
+.eh-name{font-weight:900;font-size:.88rem;color:#fff;}
+.eh-center{font-size:.95rem;font-weight:700;color:var(--gold);text-align:center;}
+.eh-center .big{font-size:1.8rem;font-weight:900;color:#fff;display:block;line-height:1;}
+.eh-right{display:flex;align-items:center;gap:8px;}
+.timer-display{font-size:1.5rem;font-weight:900;color:#fff;letter-spacing:2px;min-width:84px;text-align:right;}
+.timer-display.warning{color:#FF7043;animation:pulse 1s infinite;}
+.hide-time-btn{background:rgba(255,255,255,.15);border:none;border-radius:20px;
+  color:#fff;font-size:.66rem;font-weight:700;padding:4px 9px;cursor:pointer;line-height:1.4;}
+.hide-time-btn:hover{background:rgba(255,255,255,.25);}
+
+/* ── EXAM LAYOUT ── */
+.exam-body{display:flex;flex:1;overflow:hidden;}
+.exam-left{flex:1;background:#fff;border-right:2px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;}
+.exam-right{width:400px;background:#F8F9FC;display:flex;flex-direction:column;overflow:hidden;}
+.exam-right-inner{flex:1;overflow-y:auto;padding:16px 15px;}
+.exam-footer{background:#fff;border-top:2px solid var(--border);display:flex;
+  align-items:center;justify-content:space-between;padding:0 20px;height:54px;flex-shrink:0;}
+
+.nav-btn{background:var(--gold);color:var(--navy);border:none;border-radius:var(--radius);
+  font-family:'Lato',sans-serif;font-weight:900;font-size:.9rem;padding:10px 22px;cursor:pointer;transition:background .2s;}
+.nav-btn:hover{background:var(--gold-dark);}
+.nav-btn.navy{background:var(--navy);color:#fff;}
+.nav-btn.navy:hover{background:var(--navy-dark);}
+.flag-btn{background:none;border:2px solid var(--border);border-radius:var(--radius);
+  font-family:'Lato',sans-serif;font-weight:700;font-size:.83rem;color:#666;
+  padding:7px 15px;cursor:pointer;transition:all .2s;}
+.flag-btn:hover{border-color:var(--gold);color:var(--gold-dark);}
+.flag-btn.flagged{background:var(--gold);color:var(--navy);border-color:var(--gold);}
+
+.passage-area{flex:1;overflow-y:auto;padding:20px 24px;}
+.instruction-text{font-weight:700;font-size:.88rem;line-height:1.6;margin-bottom:14px;color:#333;}
+.passage-title{font-family:'Merriweather',serif;font-weight:700;font-size:1rem;margin-bottom:12px;color:var(--navy);}
+.passage-body{font-family:'Merriweather',serif;font-size:.86rem;line-height:1.9;color:#333;}
+.passage-body p{margin-bottom:13px;}
+
+.tab-bar{display:flex;border-bottom:2px solid var(--border);flex-shrink:0;background:#F4F5FA;}
+.tab-btn{flex:1;padding:11px 8px;font-family:'Lato',sans-serif;font-weight:700;font-size:.86rem;
+  color:#777;background:none;border:none;border-right:1px solid var(--border);cursor:pointer;transition:all .15s;}
+.tab-btn:last-child{border-right:none;}
+.tab-btn:hover{background:var(--navy-light);color:var(--navy);}
+.tab-btn.active{background:#fff;color:var(--navy);font-weight:900;border-bottom:3px solid var(--gold);margin-bottom:-2px;}
+
+.sec-div{font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.8px;
+  color:#AAA;margin-bottom:8px;padding-bottom:4px;border-bottom:2px solid #E8E8E8;}
+
+.right-instruction{font-weight:700;font-size:.84rem;line-height:1.6;color:#333;margin-bottom:6px;}
+.which-label{font-weight:900;font-size:.9rem;color:var(--navy);margin:10px 0 8px;}
+.q-row{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;
+  padding:9px 0;border-bottom:1px solid #EEE;}
+.q-row:last-child{border-bottom:none;}
+.q-text{flex:1;font-size:.82rem;line-height:1.5;color:#333;}
+.q-select{appearance:none;-webkit-appearance:none;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7'%3E%3Cpath d='M0 0l5 7 5-7z' fill='%23F5A623'/%3E%3C/svg%3E") no-repeat right 8px center;
+  border:1.5px solid #CCC;border-radius:6px;font-family:'Lato',sans-serif;font-weight:700;
+  font-size:.86rem;color:#333;padding:7px 26px 7px 11px;cursor:pointer;min-width:64px;flex-shrink:0;}
+.q-select:focus{outline:none;border-color:var(--navy);}
+.q-select.correct{border-color:var(--correct);background-color:var(--correct-bg);color:var(--correct);}
+.q-select.incorrect{border-color:var(--incorrect);background-color:var(--incorrect-bg);color:var(--incorrect);}
+
+/* GAP */
+.gap-label{display:inline-block;font-family:'Lato',sans-serif;font-weight:900;font-size:.77rem;
+  color:var(--gold-dark);background:var(--gold-light);border:1.5px solid var(--gold);
+  border-radius:4px;padding:1px 6px;margin:0 2px;white-space:nowrap;transition:all .2s;}
+.gap-label.filled{background:var(--correct-bg);border-color:var(--correct);color:var(--correct);}
+.option-card{background:#fff;border:1.5px solid #CCC;border-radius:8px;padding:9px 12px;
+  margin-bottom:6px;font-size:.8rem;line-height:1.5;cursor:grab;text-align:center;transition:all .15s;}
+.option-card:hover{border-color:var(--navy);background:var(--navy-light);transform:translateY(-1px);}
+.option-card.dragging{opacity:.3;cursor:grabbing;}
+.option-card.used{opacity:.22;pointer-events:none;background:#F5F5F5;}
+.gap-row-wrap{display:flex;align-items:center;gap:9px;margin-bottom:7px;}
+.gap-row-label{font-weight:900;font-size:.8rem;min-width:48px;color:#666;flex-shrink:0;}
+.drop-zone{flex:1;min-height:42px;border:2px dashed var(--gold);border-radius:8px;
+  background:var(--gold-light);display:flex;align-items:center;justify-content:space-between;
+  padding:5px 9px;transition:all .15s;}
+.drop-zone.drag-over{background:#FFF0C0;border-color:var(--gold-dark);box-shadow:0 0 0 3px rgba(245,166,35,.22);}
+.drop-zone.filled{border-style:solid;border-color:var(--correct);background:var(--correct-bg);}
+.drop-zone .filled-text{flex:1;font-size:.77rem;line-height:1.4;color:var(--correct);font-weight:700;display:none;}
+.drop-zone .placeholder-txt{font-style:italic;color:#BBB;font-size:.75rem;}
+.drop-zone .remove-btn{flex-shrink:0;background:none;border:none;cursor:pointer;color:#E53935;font-size:.88rem;padding:0 2px;display:none;}
+.drop-zone.filled .remove-btn{display:block;}
+
+/* POEM */
+.poem-text{font-family:'Merriweather',serif;font-style:italic;font-size:.86rem;line-height:2.05;
+  color:#333;background:var(--navy-light);padding:16px 20px;border-left:4px solid var(--navy);
+  border-radius:0 var(--radius) var(--radius) 0;margin-bottom:6px;}
+
+/* MCQ */
+.mcq-block{padding:11px 0;border-bottom:1px solid #EEE;}
+.mcq-block:last-child{border-bottom:none;}
+.mcq-q-num{font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:var(--navy);margin-bottom:4px;}
+.mcq-q-text{font-size:.83rem;line-height:1.5;font-weight:700;color:#222;margin-bottom:7px;}
+.mcq-options{display:flex;flex-direction:column;gap:5px;}
+.mcq-option{display:flex;align-items:flex-start;gap:8px;padding:7px 10px;border:1.5px solid #DDD;
+  border-radius:7px;background:#fff;cursor:pointer;transition:all .15s;font-size:.8rem;line-height:1.4;}
+.mcq-option:hover{border-color:var(--navy);background:var(--navy-light);}
+.mcq-option.selected{border-color:var(--navy);background:var(--navy);color:#fff;}
+.mcq-option.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--correct);}
+.mcq-option.incorrect{border-color:var(--incorrect);background:var(--incorrect-bg);color:var(--incorrect);}
+.mcq-opt-letter{font-weight:900;flex-shrink:0;width:15px;}
+
+/* ── REVIEW SCREEN ── */
+#screen-review{background:var(--bg);}
+.review-header{background:var(--navy);padding:0 24px;height:58px;display:flex;align-items:center;
+  justify-content:space-between;flex-shrink:0;}
+.review-header h2{color:#fff;font-size:1.05rem;font-weight:900;}
+.review-score-hdr{color:rgba(255,255,255,.75);font-size:.88rem;font-weight:700;}
+.review-tabs{display:flex;border-bottom:2px solid var(--border);flex-shrink:0;background:#fff;}
+.rev-tab{flex:1;padding:12px;font-family:'Lato',sans-serif;font-weight:700;font-size:.88rem;
+  color:#777;background:none;border:none;cursor:pointer;transition:all .15s;border-right:1px solid var(--border);}
+.rev-tab:last-child{border-right:none;}
+.rev-tab.active{color:var(--navy);font-weight:900;border-bottom:3px solid var(--gold);margin-bottom:-2px;background:#fff;}
+.rev-tab:hover:not(.active){background:var(--navy-light);color:var(--navy);}
+.review-body{flex:1;overflow-y:auto;padding:20px 28px;max-width:800px;margin:0 auto;width:100%;}
+
+.rev-item{background:#fff;border-radius:10px;padding:14px 18px;margin-bottom:10px;
+  box-shadow:var(--shadow);border-left:5px solid #EEE;}
+.rev-item.rev-correct{border-left-color:var(--correct);}
+.rev-item.rev-wrong{border-left-color:var(--incorrect);}
+.rev-item-top{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:7px;}
+.rev-badge{flex-shrink:0;font-weight:900;font-size:.76rem;padding:3px 9px;border-radius:20px;}
+.rev-badge.correct{background:var(--correct-bg);color:var(--correct);}
+.rev-badge.wrong{background:var(--incorrect-bg);color:var(--incorrect);}
+.rev-q-text{font-weight:700;font-size:.84rem;line-height:1.5;color:#222;flex:1;}
+.rev-answers{font-size:.8rem;line-height:1.7;color:#555;}
+.rev-answers .lbl{font-weight:700;}
+.rev-answers .ca{color:var(--correct);font-weight:700;}
+.rev-answers .wa{color:var(--incorrect);}
+.solution-box{background:var(--navy-light);border:1.5px solid var(--border);border-radius:8px;
+  padding:11px 14px;margin-top:9px;font-size:.8rem;line-height:1.65;color:#333;}
+.sol-title{font-weight:900;font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;color:var(--navy);margin-bottom:5px;}
+
+.review-footer{background:#fff;border-top:2px solid var(--border);padding:0 28px;height:54px;
+  display:flex;align-items:center;justify-content:flex-end;flex-shrink:0;}
+
+/* ── RESULTS ── */
+#screen-results{background:linear-gradient(145deg,var(--navy-dark),var(--navy));align-items:center;justify-content:center;}
+.results-card{background:#fff;border-radius:20px;padding:38px 46px;width:500px;max-width:94vw;
+  text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.3);animation:cardIn .4s both;}
+.results-logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:18px;}
+.rl-shield{background:var(--navy);color:#fff;font-weight:900;font-size:.88rem;width:38px;height:42px;
+  display:flex;align-items:center;justify-content:center;border-radius:5px 5px 10px 10px;
+  clip-path:polygon(0 0,100% 0,100% 70%,50% 100%,0 70%);}
+.rl-name{font-weight:900;font-size:.98rem;color:var(--navy);text-align:left;line-height:1.2;}
+.results-title{font-size:1.3rem;font-weight:900;color:var(--navy);margin-bottom:5px;}
+.student-name-display{font-size:.88rem;color:#666;margin-bottom:16px;}
+.score-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px;margin-bottom:18px;}
+.score-block{border:2px solid var(--border);border-radius:10px;padding:13px 10px;}
+.score-block .sb-set{font-size:.68rem;font-weight:900;text-transform:uppercase;letter-spacing:.8px;color:#999;margin-bottom:3px;}
+.score-block .sb-score{font-size:1.85rem;font-weight:900;color:var(--navy);}
+.score-block .sb-label{font-size:.7rem;color:#777;margin-top:2px;}
+.total-score-wrap{margin-bottom:18px;}
+.total-label{font-size:.75rem;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.8px;margin-bottom:4px;}
+.total-score{font-size:2.9rem;font-weight:900;color:var(--gold-dark);line-height:1;}
+.results-btns{display:flex;flex-direction:column;gap:9px;}
+.restart-btn{width:100%;background:var(--navy);color:#fff;border:none;border-radius:var(--radius);
+  padding:13px;font-family:'Lato',sans-serif;font-weight:900;font-size:.9rem;cursor:pointer;transition:background .2s;}
+.restart-btn:hover{background:var(--navy-dark);}
+.full-review-btn{width:100%;background:none;color:var(--navy);border:2px solid var(--navy);
+  border-radius:var(--radius);padding:10px;font-family:'Lato',sans-serif;font-weight:700;
+  font-size:.86rem;cursor:pointer;transition:all .2s;}
+.full-review-btn:hover{background:var(--navy-light);}
+
+/* ── TEACHER ── */
+#screen-teacher{overflow-y:auto;}
+.teacher-header{background:var(--navy);padding:0 26px;height:58px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.teacher-header h1{color:#fff;font-size:1.05rem;font-weight:900;}
+.back-btn-sm{background:rgba(255,255,255,.15);border:none;border-radius:8px;color:#fff;
+  font-weight:700;font-size:.8rem;padding:6px 13px;cursor:pointer;}
+.back-btn-sm:hover{background:rgba(255,255,255,.25);}
+.teacher-body{padding:22px 26px;max-width:900px;margin:0 auto;}
+.teacher-body h2{font-size:.9rem;font-weight:900;color:var(--navy);margin:18px 0 10px;}
+.results-table{width:100%;border-collapse:collapse;background:#fff;border-radius:12px;
+  overflow:hidden;box-shadow:var(--shadow);margin-bottom:14px;font-size:.8rem;}
+.results-table thead{background:var(--navy);color:#fff;}
+.results-table th{padding:11px 13px;text-align:left;font-weight:700;font-size:.73rem;
+  text-transform:uppercase;letter-spacing:.5px;}
+.results-table td{padding:10px 13px;border-bottom:1px solid #EEE;color:#333;}
+.results-table tr:last-child td{border-bottom:none;}
+.results-table tbody tr:hover{background:var(--navy-light);}
+.no-results{text-align:center;padding:32px;color:#AAA;font-size:.85rem;background:#fff;border-radius:12px;box-shadow:var(--shadow);}
+.clear-btn{background:var(--incorrect);color:#fff;border:none;border-radius:8px;padding:9px 18px;
+  font-family:'Lato',sans-serif;font-weight:700;font-size:.8rem;cursor:pointer;margin-top:4px;}
+
+/* ── TEACHER TABS ── */
+.t-tabs{display:flex;border-bottom:2px solid var(--border);margin-bottom:20px;background:#fff;
+  border-radius:10px 10px 0 0;overflow:hidden;box-shadow:var(--shadow);}
+.t-tab{flex:1;padding:13px;font-family:'Lato',sans-serif;font-weight:700;font-size:.88rem;
+  color:#777;background:none;border:none;cursor:pointer;transition:all .15s;border-right:1px solid var(--border);}
+.t-tab:last-child{border-right:none;}
+.t-tab.active{color:var(--navy);font-weight:900;background:var(--navy-light);}
+.t-tab:hover:not(.active){background:#F4F5FA;}
+.t-panel{display:none;}.t-panel.active{display:block;}
+
+/* ── Q STATS TABLE ── */
+.q-stats-section{margin-bottom:28px;}
+.q-stats-section h3{font-size:.88rem;font-weight:900;color:var(--navy);margin-bottom:10px;
+  padding-bottom:6px;border-bottom:2px solid var(--border);}
+.q-stat-row{background:#fff;border-radius:8px;padding:12px 16px;margin-bottom:8px;
+  box-shadow:var(--shadow);display:flex;align-items:center;gap:14px;}
+.q-stat-num{font-weight:900;font-size:.8rem;color:#AAA;min-width:24px;flex-shrink:0;}
+.q-stat-text{flex:1;font-size:.82rem;color:#333;line-height:1.45;}
+.q-stat-bar-wrap{width:160px;flex-shrink:0;}
+.q-stat-bar-bg{background:#EEE;border-radius:20px;height:10px;overflow:hidden;}
+.q-stat-bar-fill{height:10px;border-radius:20px;transition:width .4s;}
+.q-stat-pct{font-size:.78rem;font-weight:900;margin-top:4px;text-align:right;}
+.q-stat-count{font-size:.78rem;color:#777;flex-shrink:0;min-width:60px;text-align:right;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-thumb{background:#CCC;border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- LANDING -->
+<div id="screen-landing" class="screen active">
+  <div class="landing-card">
+    <div class="logo-wrap">
+      <div class="logo-shield">JK</div>
+      <div class="logo-text"><div class="l1">JK COACHING</div><div class="l2">COLLEGE</div></div>
+    </div>
+    <div class="landing-title">Online Practice Test</div>
+    <div class="landing-sub">Enter your name and select a test to begin.</div>
+
+    <label class="form-label">Your Full Name</label>
+    <input class="form-input" id="student-name" type="text" placeholder="e.g. Emma Johnson" autocomplete="off"/>
+
+    <div class="test-grid">
+      <div class="test-col" id="col-oc">
+        <div class="test-col-header">
+          <div class="tc-title">OC (Year 4)</div>
+          <div class="tc-sub">8 questions per set</div>
+        </div>
+        <button class="set-row-btn" id="btn-oc-s1" onclick="pickTest('OC',1)">
+          <span class="sr-title">Set 1: Extract Matching</span>
+          <span class="sr-time">&#x23F1; 11 min</span>
+        </button>
+        <button class="set-row-btn" id="btn-oc-s2" onclick="pickTest('OC',2)">
+          <span class="sr-title">Set 2: Gap Text</span>
+          <span class="sr-time">&#x23F1; 8 min</span>
+        </button>
+      </div>
+      <div class="test-col" id="col-sel">
+        <div class="test-col-header">
+          <div class="tc-title">Selective (Year 6)</div>
+          <div class="tc-sub">10 questions per set</div>
+        </div>
+        <button class="set-row-btn" id="btn-sel-s1" onclick="pickTest('Selective',1)">
+          <span class="sr-title">Set 1: Poetry MCQ</span>
+          <span class="sr-time">&#x23F1; 11 min</span>
+        </button>
+        <button class="set-row-btn" id="btn-sel-s2" onclick="pickTest('Selective',2)">
+          <span class="sr-title">Set 2: Extract Matching</span>
+          <span class="sr-time">&#x23F1; 12 min</span>
+        </button>
+      </div>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startExam()" disabled>Start Test &#x2192;</button>
+  </div>
+  <span class="teacher-link" onclick="showPwModal()">🔑 Teacher Dashboard</span>
+</div>
+
+<!-- PASSWORD MODAL -->
+<div class="modal-overlay" id="pw-modal">
+  <div class="modal-box">
+    <h3>🔒 Teacher Access</h3>
+    <p>Enter your password to view student results.</p>
+    <input class="pw-input" id="pw-input" type="password" placeholder="••••" maxlength="6"
+      onkeydown="if(event.key==='Enter')checkPw()"/>
+    <div class="pw-error" id="pw-error"></div>
+    <button class="pw-btn" onclick="checkPw()">Enter</button>
+    <span class="pw-cancel" onclick="closePwModal()">Cancel</span>
+  </div>
+</div>
+
+<!-- OC SET 1 — EXTRACT -->
+<div id="screen-oc1" class="screen">
+  <div class="exam-header">
+    <div class="eh-logo"><div class="eh-shield">JK</div><div class="eh-name">JK Coaching</div></div>
+    <div class="eh-center"><span class="big">Set 1</span><span style="font-size:.68rem;color:rgba(245,166,35,.8)">OC · Extract · 11:00</span></div>
+    <div class="eh-right"><div class="timer-display" id="oc1-timer">11:00</div>
+      <button class="hide-time-btn" onclick="toggleTimerVis('oc1')">Hide<br>time</button></div>
+  </div>
+  <div class="exam-body">
+    <div class="exam-left"><div class="tab-bar" id="oc1-tabs"></div><div class="passage-area" id="oc1-passage"></div></div>
+    <div class="exam-right"><div class="exam-right-inner">
+      <div class="right-instruction" id="oc1-ri"></div>
+      <div class="which-label">Which extract…</div>
+      <div id="oc1-qs"></div>
+    </div></div>
+  </div>
+  <div class="exam-footer">
+    <button class="nav-btn" onclick="showScreen('screen-landing')">◀ Back</button>
+    <button class="flag-btn" id="oc1-flag" onclick="toggleFlag('oc1')">🚩 Flag</button>
+    <button class="nav-btn navy" onclick="submitSet('oc1')">Submit ▶</button>
+  </div>
+</div>
+
+<!-- OC SET 2 — GAP TEXT -->
+<div id="screen-oc2" class="screen">
+  <div class="exam-header">
+    <div class="eh-logo"><div class="eh-shield">JK</div><div class="eh-name">JK Coaching</div></div>
+    <div class="eh-center"><span class="big">Set 2</span><span style="font-size:.68rem;color:rgba(245,166,35,.8)">OC · Gap Text · 8:00</span></div>
+    <div class="eh-right"><div class="timer-display" id="oc2-timer">08:00</div>
+      <button class="hide-time-btn" onclick="toggleTimerVis('oc2')">Hide<br>time</button></div>
+  </div>
+  <div class="exam-body">
+    <div class="exam-left"><div class="passage-area" id="oc2-passage"></div></div>
+    <div class="exam-right"><div class="exam-right-inner">
+      <div class="sec-div">Sentence Options — drag to gap</div>
+      <div id="oc2-options"></div>
+      <div style="margin-top:13px"><div class="sec-div">Answer Gaps</div><div id="oc2-gaps"></div></div>
+    </div></div>
+  </div>
+  <div class="exam-footer">
+    <button class="nav-btn" onclick="showScreen('screen-landing')">◀ Back</button>
+    <button class="flag-btn" id="oc2-flag" onclick="toggleFlag('oc2')">🚩 Flag</button>
+    <button class="nav-btn navy" onclick="submitSet('oc2')">Submit ▶</button>
+  </div>
+</div>
+
+<!-- SELECTIVE SET 1 — POEM MCQ -->
+<div id="screen-sel1" class="screen">
+  <div class="exam-header">
+    <div class="eh-logo"><div class="eh-shield">JK</div><div class="eh-name">JK Coaching</div></div>
+    <div class="eh-center"><span class="big">Set 1</span><span style="font-size:.68rem;color:rgba(245,166,35,.8)">Selective · Poetry MCQ · 11:00</span></div>
+    <div class="eh-right"><div class="timer-display" id="sel1-timer">11:00</div>
+      <button class="hide-time-btn" onclick="toggleTimerVis('sel1')">Hide<br>time</button></div>
+  </div>
+  <div class="exam-body">
+    <div class="exam-left"><div class="passage-area" id="sel1-poem"></div></div>
+    <div class="exam-right"><div class="exam-right-inner">
+      <div class="sec-div">Questions</div>
+      <div id="sel1-qs"></div>
+    </div></div>
+  </div>
+  <div class="exam-footer">
+    <button class="nav-btn" onclick="showScreen('screen-landing')">◀ Back</button>
+    <button class="flag-btn" id="sel1-flag" onclick="toggleFlag('sel1')">🚩 Flag</button>
+    <button class="nav-btn navy" onclick="submitSet('sel1')">Submit ▶</button>
+  </div>
+</div>
+
+<!-- SELECTIVE SET 2 — EXTRACT -->
+<div id="screen-sel2" class="screen">
+  <div class="exam-header">
+    <div class="eh-logo"><div class="eh-shield">JK</div><div class="eh-name">JK Coaching</div></div>
+    <div class="eh-center"><span class="big">Set 2</span><span style="font-size:.68rem;color:rgba(245,166,35,.8)">Selective · Extract · 12:00</span></div>
+    <div class="eh-right"><div class="timer-display" id="sel2-timer">12:00</div>
+      <button class="hide-time-btn" onclick="toggleTimerVis('sel2')">Hide<br>time</button></div>
+  </div>
+  <div class="exam-body">
+    <div class="exam-left"><div class="tab-bar" id="sel2-tabs"></div><div class="passage-area" id="sel2-passage"></div></div>
+    <div class="exam-right"><div class="exam-right-inner">
+      <div class="right-instruction" id="sel2-ri"></div>
+      <div class="which-label">Which extract…</div>
+      <div id="sel2-qs"></div>
+    </div></div>
+  </div>
+  <div class="exam-footer">
+    <button class="nav-btn" onclick="showScreen('screen-landing')">◀ Back</button>
+    <button class="flag-btn" id="sel2-flag" onclick="toggleFlag('sel2')">🚩 Flag</button>
+    <button class="nav-btn navy" onclick="submitSet('sel2')">Submit ▶</button>
+  </div>
+</div>
+
+<!-- REVIEW / SOLUTION -->
+<div id="screen-review" class="screen">
+  <div class="review-header">
+    <h2 id="rev-title">Set Review</h2>
+    <div class="review-score-hdr" id="rev-score-hdr"></div>
+  </div>
+  <div class="review-tabs">
+    <button class="rev-tab active" id="rev-tab-review" onclick="switchRevTab('review')">📋 Review My Answers</button>
+    <button class="rev-tab" id="rev-tab-solution" onclick="switchRevTab('solution')">💡 Solutions</button>
+  </div>
+  <div class="review-body" id="rev-body"></div>
+  <div class="review-footer">
+    <button class="nav-btn navy" id="rev-next-btn" onclick="proceedFromReview()">Continue →</button>
+  </div>
+</div>
+
+<!-- FINAL RESULTS -->
+<div id="screen-results" class="screen">
+  <div class="results-card">
+    <div class="results-logo">
+      <div class="rl-shield">JK</div>
+      <div class="rl-name">JK COACHING<br>COLLEGE</div>
+    </div>
+    <div class="results-title">Test Complete! 🎉</div>
+    <div class="student-name-display" id="res-name"></div>
+    <div class="score-grid" id="res-grid"></div>
+    <div class="total-score-wrap">
+      <div class="total-label">Total Score</div>
+      <div class="total-score" id="res-total">—</div>
+    </div>
+    <div class="results-btns">
+      <button class="full-review-btn" onclick="showFullReview()">📋 Review All Answers</button>
+      <button class="restart-btn" onclick="restart()">↩ Back to Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEACHER DASHBOARD -->
+<div id="screen-teacher" class="screen">
+  <div class="teacher-header" style="flex-shrink:0">
+    <h1>🔑 Teacher Results Dashboard</h1>
+    <button class="back-btn-sm" onclick="showScreen('screen-landing')">← Back to Home</button>
+  </div>
+  <div style="overflow-y:auto;flex:1;padding:22px 26px;max-width:960px;margin:0 auto;width:100%">
+    <div class="t-tabs">
+      <button class="t-tab active" id="tt-students" onclick="switchTeacherTab('students')">📋 Student Results</button>
+      <button class="t-tab" id="tt-questions" onclick="switchTeacherTab('questions')">📊 Question Analysis</button>
+    </div>
+
+    <!-- STUDENT RESULTS PANEL -->
+    <div class="t-panel active" id="tp-students">
+      <h2 style="font-size:.9rem;font-weight:900;color:var(--navy);margin:0 0 10px">OC Students</h2>
+      <div id="t-oc"></div>
+      <h2 style="font-size:.9rem;font-weight:900;color:var(--navy);margin:18px 0 10px">Selective Students</h2>
+      <div id="t-sel"></div>
+      <button class="clear-btn" onclick="clearAll()">🗑 Clear All Results</button>
+    </div>
+
+    <!-- QUESTION ANALYSIS PANEL -->
+    <div class="t-panel" id="tp-questions">
+      <div id="q-stats-container"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════
+//  DATA — replace placeholders with real content
+// ══════════════════════════════════════
+const OC_SET1={
+  timerSecs:660,
+  rightInstruction:"For questions 18\u201325, choose the option (A, B, C or D) which you think best answers the question.",
+  extracts:{
+    A:{title:"Extract A",body:`<p>The fire that broke out in a bakery on Pudding Lane in the early hours of 2 September 1666 burned for four days and destroyed more than thirteen thousand houses, eighty-seven churches, and the original St Paul\u2019s Cathedral. The loss of life was surprisingly small, but the destruction of property was so vast that an estimated one hundred thousand people were left homeless in a city of perhaps five hundred thousand. What made the fire spread so rapidly was the nature of the city itself: the medieval buildings of London were almost entirely built of timber, often with upper storeys that jutted out over the narrow streets, creating an almost continuous canopy of dry wood through which the flames moved with frightening speed.</p><p>The rebuilding that followed transformed not only the physical fabric of London but the legal and commercial landscape of England. The Rebuilding Act of 1667 required that all new structures be erected in brick or stone, establishing for the first time a set of enforceable standards governing what could be built and where. Within a few years of the fire, the world\u2019s first property insurance companies had been founded in London, created specifically in response to the vulnerability that the disaster had exposed. Historians of urban development regard the Great Fire as one of the pivotal moments in the emergence of modern city planning: it was the catastrophe that forced a medieval city to reimagine itself as something more durable.</p>`},
+    B:{title:"Extract B",body:`<p>Three days of watching the alerts had not prepared me for the afternoon the light turned strange. I had assumed, in the abstract way you assume things you hope will never happen, that I would know what to do when the time came. Instead I found myself standing in the middle of the kitchen with a bag I had started to pack and then abandoned, uncertain whether the things I had chosen made sense, uncertain whether leaving made sense, uncertain about most things.</p><p>The smoke had been building from the north since morning \u2014 not grey but a deep, bruised orange that spread along the edge of the sky the way rust spreads at the hem of something left too long in the wet. My neighbour appeared at the back fence the way she sometimes did when she had something to say. She had been through the 2009 fires in Victoria and carried that knowledge without drama. \u2018Go now,\u2019 she said. \u2018Don\u2019t take the highway.\u2019 She did not elaborate and I did not ask her to. I put the bag in the car, called the dog, and left. The house was still standing when I came back four days later. I have thought about what she said many times since \u2014 not only in the context of fires.</p>`},
+    C:{title:"Extract C",body:`<p>Fire is not a substance but a process: the rapid oxidation of a combustible material in the presence of heat and oxygen, releasing light, heat, and combustion gases as by-products. Fire scientists describe the conditions necessary for combustion using the concept of the \u2018fire triangle\u2019: fuel, oxygen, and heat must all be present simultaneously for a fire to ignite and continue. Remove any one of these elements \u2014 smother the flames to cut off oxygen, drench the fuel with water to lower its temperature below its ignition point, or eliminate the combustible material entirely \u2014 and the fire will cease. The temperature at which a given material begins to release flammable vapours is known as its \u2018pyrolysis temperature\u2019, a figure that varies significantly between substances.</p><p>When fire burns in an enclosed space, it can produce two particularly dangerous phenomena that investigators and firefighters are trained to anticipate. The first is \u2018flashover\u2019: the point at which radiant heat raises every combustible surface in a room simultaneously to its ignition temperature, causing the entire contents of the space to ignite at once. The second is \u2018backdraft\u2019: the explosive ignition that occurs when a fire that has been starved of oxygen suddenly receives a fresh supply \u2014 typically when a door or window is opened. Researchers in fire dynamics also study \u2018fire plume behaviour\u2019 \u2014 the patterns by which hot gases and smoke rise and spread through a structure \u2014 in order to model how a fire is likely to develop in complex environments.</p>`},
+    D:{title:"Extract D",body:`<p>For Aboriginal Australians, fire was not a force to be avoided but a tool to be applied with precision and purpose. Across most of the continent, Aboriginal communities practised what is now called \u2018cultural burning\u2019 \u2014 the deliberate, low-intensity burning of vegetation at carefully chosen times and places to maintain the health of Country. These burns served multiple purposes simultaneously: they cleared accumulated dry growth that would otherwise fuel a high-intensity wildfire, encouraged the regeneration of food plants and the habitat of animals that communities depended on, and kept pathways open across the landscape. The knowledge required to burn safely and effectively \u2014 which plants to burn, when, in what direction, and under what weather conditions \u2014 was accumulated over tens of thousands of years and passed between generations through oral tradition, ceremony, and direct practice.</p><p>Following European colonisation, cultural burning was actively suppressed in many parts of Australia, partly through legislation that restricted the lighting of fires on land that had been taken from Aboriginal communities, and partly through a wider dismissal of Indigenous land management as primitive or dangerous. The consequences of this suppression became increasingly apparent over the twentieth century, as the fuel loads that cultural burning had historically kept in check were allowed to accumulate unchecked, contributing to the conditions that enabled catastrophic wildfires. In recent decades, land management authorities in several states have begun working with Aboriginal communities to reintegrate cultural burning into broader fire management strategies, in a formal recognition that this knowledge represents one of the most effective and ecologically sound approaches to fire stewardship ever developed.</p>`}
+  },
+  questions:[
+    {id:"oc1q1",text:"18. Which extract uses figurative language to describe the appearance of an approaching fire?",answer:"B",
+      explanation:"Extract B uses a simile in the second paragraph: \u2018a deep, bruised orange that spread along the edge of the sky the way rust spreads at the hem of something left too long in the wet.\u2019 This figurative language makes the visual quality of the approaching fire concrete through a domestic image of slow deterioration. Extract A uses evocative language about how the fire moved through London\u2019s streets, but A\u2019s language is historical and analytical in intent, not figurative in a literary sense."},
+    {id:"oc1q2",text:"19. Which extract explains what a fire requires in order to keep burning?",answer:"C",
+      explanation:"Extract C explains that fuel, oxygen, and heat must all be present simultaneously for a fire to continue \u2014 the fire triangle. Remove any one and the fire will cease. Extract B is the main distractor: the narrator vividly describes the smoke building and the light changing colour, but B is describing a subjective emotional experience, not explaining the chemical conditions a fire needs to sustain itself."},
+    {id:"oc1q3",text:"20. Which extract explains why a particular group regarded fire as an important way of caring for the land?",answer:"D",
+      explanation:"Extract D explains directly why Aboriginal communities regarded fire as an important tool: cultural burning cleared dry growth, encouraged regeneration of food plants and animal habitat, and kept pathways open. The stem avoids the words \u2018Aboriginal\u2019 and \u2018cultural burning,\u2019 so students must understand the purpose of the practice. Extract A is the main distractor \u2014 it involves fire and land management \u2014 but A concerns emergency legislation after a disaster, not a long-standing practice of deliberate burning."},
+    {id:"oc1q4",text:"21. Which extract explains why a major fire led to lasting changes in how buildings were constructed?",answer:"A",
+      explanation:"Extract A explains directly: the medieval timber structures made the fire spread with devastating speed, and the Rebuilding Act of 1667 responded by requiring all new structures to be built in brick or stone. The stem avoids the words \u2018London,\u2019 \u2018timber,\u2019 and \u2018Great Fire,\u2019 so students cannot answer by keyword matching alone. Extract D also involves fire and changes to land management, but D describes a tradition that was suppressed and partially revived, not a single fire leading to new construction standards."},
+    {id:"oc1q5",text:"22. Which extract mentions specific terms used by people who study fire professionally?",answer:"C",
+      explanation:"Extract C names several specialist terms: \u2018fire triangle,\u2019 \u2018pyrolysis temperature,\u2019 \u2018flashover,\u2019 \u2018backdraft,\u2019 and \u2018fire plume behaviour,\u2019 all attributed to fire scientists, investigators, and researchers. Extract A uses terms from urban history; Extract D uses terms from traditional land management \u2014 but neither belongs to the vocabulary of scientists who study the chemistry and physics of fire."},
+    {id:"oc1q6",text:"23. Which extract describes a writer who felt unprepared when confronting a real emergency?",answer:"B",
+      explanation:"Extract B shows the narrator\u2019s unpreparedness through behaviour rather than direct statement: standing in the kitchen with a half-packed bag, uncertain whether to leave at all. Students must infer the writer\u2019s psychological state from their actions. Extract D discusses how Aboriginal burning practices were suppressed, but D is impersonal historical and policy analysis with no individual\u2019s personal experience of confronting an emergency."},
+    {id:"oc1q7",text:"24. Which extract gives evidence that one fire had consequences extending well beyond those directly affected?",answer:"A",
+      explanation:"Extract A provides specific evidence of wider consequences: the Rebuilding Act transformed construction standards for the entire city; the world\u2019s first property insurance companies were founded in direct response to the disaster; historians regard the fire as pivotal in the emergence of modern city planning. Extract D is the main distractor \u2014 it describes consequences of suppressing cultural burning \u2014 but D describes an ongoing historical pattern, not the demonstrable consequences of a single fire."},
+    {id:"oc1q8",text:"25. Which extract describes a writer who acted on advice given by someone with direct experience?",answer:"B",
+      explanation:"Extract B describes the narrator acting on brief advice from a neighbour who had direct personal experience of the 2009 fires in Victoria. The neighbour says only \u2018Go now\u2019 and \u2018Don\u2019t take the highway,\u2019 and the narrator follows without asking for elaboration. Students must notice the brief mention of 2009 and understand why the narrator trusts the advice. Extract C explains what must be done to extinguish a fire, but no individual in C is given personal guidance by another person."}
+  ]
+};
+const OC_SET2={
+  timerSecs:480,
+  instruction:"Read the text below. Six sentences have been removed from the text. Choose from the sentences (A\u2013G) the one which fits each gap (12\u201317). There is one extra sentence which you do not need to use.",
+  title:"The Early Struggles of Flying Machines",
+  passages:[
+    "For most of recorded history, human flight existed only in myth. The story of Icarus warned against the ambition; the reality proved far more stubborn. Across two centuries, inventors drew blueprints, built contraptions and launched themselves from hills and towers, only to fall. Yet each failure carried within it something useful: a small correction, a new question, an insight that the next generation would quietly inherit. The history of aviation is not a story of sudden genius. It is a story of accumulated failure.",
+    "The foundations of modern aviation were laid not by an aviator but by a Yorkshire landowner. Sir George Cayley spent decades studying the science of lift and drag, publishing a paper in 1809 that would define the principles on which all future aircraft were based. Cayley was unusual among the inventors of his era in one crucial respect. {A} In 1853, his coachman became the first person to cross a valley in a heavier-than-air glider \u2014 though, by all accounts, the coachman promptly resigned.",
+    "{B} In the 1840s, William Henson and his business partner John Stringfellow became convinced that steam power offered the answer. Henson designed the Aerial Steam Carriage \u2014 a machine on paper featuring fixed wings spanning nearly 45 metres and a steam engine to drive two propellers. Stringfellow built a scaled-down version and tested it in an empty factory. {C} The public, however, had already lost interest; without private backing, the project quietly collapsed.",
+    "Otto Lilienthal was the first person to achieve controlled gliding flight with any regularity. Between 1891 and 1896, he completed more than two thousand flights from a hill he had constructed outside Berlin, carefully shifting his body weight to steer. Lilienthal understood that the knowledge required to fly safely could only be built through patient, systematic observation. {D} Yet for all his precision, the sky offered no guarantees. In 1896, his glider stalled in a gust of wind and he fell from a height of fifteen metres. He died the following day. His final recorded words were: \u2018Sacrifices must be made.\u2019",
+    "The task that had defeated so many others was finally completed by two brothers from Ohio who had never attended university. {E} Orville Wright made the first powered, controlled flight in history at Kitty Hawk, North Carolina, on 17 December 1903. The Flyer stayed in the air for twelve seconds and covered thirty-seven metres. By the end of the day, the brothers had completed four flights, the longest lasting nearly a minute. {F}",
+    "Within a decade, aircraft were crossing the English Channel, carrying passengers and, before long, changing the nature of warfare. The dream that had consumed and occasionally killed the inventors of two centuries had become, quite suddenly, an industry.",
+  ],
+  options:[
+    {id:"s1",text:"A \u2014 This methodical approach set him apart from nearly every inventor who had come before him."},
+    {id:"s2",text:"B \u2014 Yet the model, for all its limitations, became the first powered flying machine to leave the ground under its own force."},
+    {id:"s3",text:"C \u2014 Individual pioneers had brought the dream steadily closer, but none had yet managed to combine controlled lift, sustained power, and reliable steering in a single machine."},
+    {id:"s4",text:"D \u2014 He had separated the problem of lift from the problem of thrust, a distinction that earlier inventors had fatally ignored."},
+    {id:"s5",text:"E \u2014 Even so, the ambition to build a flying machine had not faded, and inventors on both sides of the Atlantic were quietly pursuing ideas of their own."},
+    {id:"s6",text:"F \u2014 It was a flawed and fragile machine, but it had demonstrated that controlled human flight, however briefly, was not entirely beyond reach."},
+    {id:"s7",text:"G \u2014 Not only had the Flyer solved the fundamental technical problem that had defeated inventors for generations, it had also transformed the act of flight from an aspiration into an engineering discipline."},
+  ],
+  answers:{A:"s4",B:"s6",C:"s2",D:"s1",E:"s3",F:"s7"},
+  explanations:{
+    A:"Gap 12 \u2014 Correct: D. The sentence before says Cayley was \u2018unusual in one crucial respect\u2019 \u2014 an incomplete claim. Sentence D supplies exactly what that respect was: he separated the problem of lift from the problem of thrust, which earlier inventors had fatally ignored. Sentence E (the extra) is the main distractor: it makes a general claim about inventors broadly and says nothing about what specifically set Cayley apart.",
+    B:"Gap 13 \u2014 Correct: F. The paragraph ends with Cayley\u2019s coachman resigning after a real if limited achievement. Sentence F provides the bridge: the machine was flawed, but had demonstrated that controlled human flight was not entirely beyond reach. This explains why Henson and Stringfellow \u2018became convinced\u2019 that steam power would complete the picture. Sentence E is tempting but only looks forward; F evaluates what just happened AND signals the unresolved problem of power.",
+    C:"Gap 14 \u2014 Correct: B. The sentence before describes Stringfellow testing a scaled-down model in a factory. Sentence B opens with \u2018Yet\u2019 (a contrast word) and supplies the result: despite its limitations, it became the first powered flying machine to leave the ground under its own force. This sets up the following sentence: \u2018The public, however, had already lost interest.\u2019 Sentence F is the distractor \u2014 it was already used at Gap 13.",
+    D:"Gap 15 \u2014 Correct: A. The sentence before describes Lilienthal\u2019s belief that knowledge could only be built through \u2018patient, systematic observation.\u2019 Sentence A opens with \u2018This methodical approach\u2019 \u2014 \u2018This\u2019 refers directly back to that approach. The word \u2018Yet\u2019 after the gap then creates the contrast: A establishes his exceptional care \u2192 \u2018Yet\u2019 introduces the fatal crash despite all that care.",
+    E:"Gap 16 \u2014 Correct: C. Sentence C states that no pioneer had yet combined controlled lift, sustained power, and reliable steering in a single machine. The sentence after names Orville Wright as the person who finally did exactly that. This is a precise general-to-specific pattern. Sentence G is the main distractor \u2014 but conclusions belong after the evidence, not before.",
+    F:"Gap 17 \u2014 Correct: G. After the full Kitty Hawk account \u2014 twelve seconds, thirty-seven metres, four flights \u2014 sentence G draws a double conclusion: the Flyer solved the technical problem that had defeated inventors for generations AND transformed flight from an aspiration into an engineering discipline. The phrase \u2018inventors for generations\u2019 looks back across the entire passage \u2014 Cayley, Henson, Lilienthal \u2014 giving G the quality of a passage-wide summary.",
+  }
+}
+const SEL_SET1={
+  timerSecs:660,
+  poemTitle:"Stopping by Woods on a Snowy Evening by Robert Frost",
+  poemLines:[
+    "Whose woods these are I think I know.",
+    "His house is in the village though;",
+    "He will not see me stopping here",
+    "To watch his woods fill up with snow.",
+    "",
+    "My little horse must think it queer",
+    "To stop without a farmhouse near",
+    "Between the woods and frozen lake",
+    "The darkest evening of the year.",
+    "",
+    "He gives his harness bells a shake",
+    "To ask if there is some mistake.",
+    "The only other sound\u2019s the sweep",
+    "Of easy wind and downy flake.",
+    "",
+    "The woods are lovely, dark and deep,",
+    "But I have promises to keep,",
+    "And miles to go before I sleep,",
+    "And miles to go before I sleep."
+  ],
+  questions:[
+    {id:"s1q1",text:"9. \u2018Whose woods these are I think I know\u2019 is mainly significant because",
+      options:[
+        "it establishes the speaker recognises the owner and is reassured by this",
+        "\u2018I think\u2019 introduces a note of uncertainty \u2014 already a slight drift from ordinary confidence",
+        "it shows the speaker conscious of being on someone else\u2019s land without permission",
+        "it suggests the speaker covets the owner\u2019s beautiful land"
+      ],answer:"B",
+      explanation:"The key is \u2018I think\u2019 \u2014 a small qualifier that introduces uncertainty into the very first line. This signals that the speaker is already drifting away from ordinary confidence. Option A misreads: \u2018I think\u2019 signals the opposite of reassurance. Option C (trespass) goes further than the text supports."},
+    {id:"s1q2",text:"10. \u2018He will not see me stopping here\u2019 is mainly significant because",
+      options:[
+        "the speaker is relieved to have entered land without the owner\u2019s knowledge",
+        "the owner\u2019s indifference to the natural world would prevent understanding why the speaker stopped",
+        "the speaker is deliberately hiding out of shame or embarrassment",
+        "absence of the owner creates a private, unobserved moment belonging entirely to the speaker"
+      ],answer:"D",
+      explanation:"The owner\u2019s absence means no one is watching \u2014 the moment is entirely private and belongs to the speaker alone. Option A misreads: there is no indication the speaker has entered land or is breaking rules. Option C imports guilt that is not signalled in the poem\u2019s tone."},
+    {id:"s1q3",text:"11. The horse \u2018must think it queer / To stop without a farmhouse near\u2019 mainly suggests",
+      options:[
+        "the horse as the voice of ordinary purpose \u2014 stopping with no practical reason is, by that measure, strange",
+        "the speaker feeling guilty and imagining even the horse judges the behaviour",
+        "the horse sensing danger and warning the speaker the stopping place is unsafe",
+        "how completely isolated the speaker is from any human community"
+      ],answer:"A",
+      explanation:"The horse represents ordinary, purposeful life \u2014 stopping for no practical reason is strange by that measure. Option B imports guilt: the speaker seems absorbed, not ashamed. Option C (danger) is not signalled by the poem\u2019s gentle tone."},
+    {id:"s1q4",text:"12. \u2018The darkest evening of the year\u2019 is mainly significant as",
+      options:[
+        "the night chosen deliberately by the speaker, knowing it would be the most beautiful",
+        "physical danger from the cold increasing the urgency of moving on",
+        "a moment of maximum darkness \u2014 weighted with the significance of endings",
+        "a measure of how difficult and lonely the speaker\u2019s journey has been"
+      ],answer:"C",
+      explanation:"The darkest evening of the year carries symbolic weight beyond mere temperature \u2014 maximum darkness is associated with endings and depth. Option B (physical danger) is not signalled by the poem\u2019s quiet, gentle tone. Option D imports personal suffering that is not in the text."},
+    {id:"s1q5",text:"13. The harness bells and the \u2018sweep / Of easy wind and downy flake\u2019 together mainly suggest",
+      options:[
+        "the natural world hostile \u2014 sound and cold working together to drive the speaker back",
+        "the ordinary world and the natural world each making a quiet claim on the speaker",
+        "the speaker so absorbed in the woods that surrounding sounds no longer register",
+        "the peacefulness of the scene proving there is nothing to fear from remaining"
+      ],answer:"B",
+      explanation:"The bells belong to the horse \u2014 ordinary, purposeful life calling back; the wind and snowflake belong to the natural world\u2019s quiet invitation to stay. Option A is wrong: the wind is described as \u2018easy\u2019 and the flake as \u2018downy\u2019 \u2014 not hostile. Option D misses the tension between the two sounds."},
+    {id:"s1q6",text:"14. \u2018lovely, dark and deep\u2019 is mainly significant because",
+      options:[
+        "\u2018lovely\u2019 shows admiration while \u2018dark and deep\u2019 describe the physical difficulty of entering",
+        "the adjectives build from most pleasant to most threatening, warning the speaker away",
+        "\u2018dark and deep\u2019 modify and deepen \u2018lovely\u2019 \u2014 beauty inseparable from danger",
+        "all three qualities coexist \u2014 the woods are attractive precisely because they are dark and deep"
+      ],answer:"D",
+      explanation:"All three adjectives apply simultaneously without contradiction \u2014 the darkness and depth are part of what makes the woods lovely, not a warning against them. Option C over-reads: \u2018danger\u2019 is too strong \u2014 the woods are tempting and mysterious, but the poem does not frame them as threatening."},
+    {id:"s1q7",text:"15. \u2018But\u2019 at the start of \u2018But I have promises to keep\u2019 is mainly significant as",
+      options:[
+        "the poem\u2019s exact turning point \u2014 whatever the woods offer, the world of obligation pulls back",
+        "reluctance to leave combined with acceptance that duty is more important than desire",
+        "the speaker arguing themselves out of the temptation to enter the woods",
+        "a contrast between private feelings and the expectations of those who hold the promises"
+      ],answer:"A",
+      explanation:"\u2018But\u2019 is the structural pivot of the entire poem. Everything before it draws the speaker toward the woods; everything after it pulls back toward obligation. Option B captures something real but is a secondary interpretation \u2014 A captures the structural and dramatic function of the word."},
+    {id:"s1q8",text:"16. \u2018promises to keep\u2019 is mainly significant as",
+      options:[
+        "evidence the speaker is already late for commitments made earlier",
+        "a mark of moral character \u2014 the speaker valuing loyalty above personal pleasure",
+        "all the obligations and unfinished business that keep the speaker in the living world",
+        "resentment of obligations, envying those with no promises to honour"
+      ],answer:"C",
+      explanation:"\u2018Promises\u2019 resonates beyond any single commitment \u2014 it represents all the obligations and unfinished business that keep the speaker in the living world. Option A narrows the meaning to a specific appointment. Option D imports resentment that is not signalled in the poem\u2019s tone."},
+    {id:"s1q9",text:"17. The repetition of \u2018And miles to go before I sleep\u2019 in the final two lines mainly",
+      options:[
+        "creates a hypnotic effect mirroring the drowsiness the speaker feels in the cold and dark",
+        "emphasises physical exhaustion and the great distance still ahead",
+        "shows the speaker reassuring themselves by repeating their purpose aloud",
+        "shifts meaning between the two lines \u2014 literal distance in the first, life\u2019s work still undone before death in the second"
+      ],answer:"D",
+      explanation:"The first \u2018sleep\u2019 means literal rest at the end of the journey; the second resonates with death \u2014 \u2018miles to go\u2019 becomes life\u2019s work still unfinished. Option A (drowsiness) is too literal and misses the deepening of meaning between the two identical lines."},
+    {id:"s1q10",text:"18. The poem as a whole mainly suggests",
+      options:[
+        "the natural world as a place of rest offering the weary traveller escape from burdens",
+        "the pull of stillness, darkness, and rest is real \u2014 but the speaker turns back to the road, held by obligations not yet complete",
+        "a crisis in which the poem records a struggle between the desire to live and the desire to die",
+        "the speaker\u2019s journey through snow as a metaphor for moving forward without knowing the final destination"
+      ],answer:"B",
+      explanation:"The whole poem holds two forces in tension: the pull of the lovely, dark, deep woods versus the obligations that call the speaker back. \u2018But\u2019 is the turning point, and the speaker does return to the road. Option C over-reads: \u2018desire to die\u2019 is too explicit \u2014 the poem is subtler, and the speaker does choose to continue."}
+  ]
+};
+const SEL_SET2={
+  timerSecs:720,
+  rightInstruction:"For questions 21\u201330, choose the option (A, B, C or D) which you think best answers the question.",
+  extracts:{
+    A:{title:"Extract A",body:`<p>My parents spoke two languages at home until I was about seven, and then, gradually, they stopped. There was no decision, no announcement \u2014 just a slow drift toward the easier option. English was the language of school, of friends, of everything outside the front door. The other language retreated. By the time I was twelve, I understood it but could no longer produce it with any confidence.</p><p>What I did not understand until much later was that the two languages had never felt equal. English was the language I used to think. The other was the language I used to perform \u2014 at my grandparents\u2019 house, at certain festivals, in situations where it was expected. This distinction felt natural for years. It was only when I began to study linguistics as an adult that I recognised it as a form of loss, though a particular kind: not the loss of access, but the loss of intimacy. The language was still there. It simply no longer felt like mine.</p><p>Stranger still, I later discovered that the language had not gone as quiet inside me as I had assumed. In dreams, it surfaced without warning. Under strong emotion \u2014 grief, startlement, sudden joy \u2014 words arrived in that language first, before English had a chance to organise itself. Whatever had been pushed underground had not disappeared. It had simply been waiting.</p>`},
+    B:{title:"Extract B",body:`<p>Languages do not merely describe the world. They determine what parts of it you are able to see. This is not a metaphor. Research into what linguists call linguistic relativity has produced a body of evidence that is difficult to dismiss: the language you speak shapes, in measurable ways, how you perceive colour, how you orient yourself in space, and how you experience the passage of time.</p><p>Speakers of languages with many distinct colour terms reliably distinguish shades that speakers of languages with fewer terms struggle to separate, even when looking at identical stimuli. Communities whose languages use cardinal directions \u2014 north, south, east, west \u2014 rather than relative terms like left and right maintain a constant, precise sense of orientation that speakers of egocentric languages find difficult to replicate. The differences are not trivial. They are structural.</p><p>If this is true, then the death of a language is not merely a cultural loss, as it is often framed. It is the permanent disappearance of a distinct cognitive orientation \u2014 a particular way of organising experience that no other language can fully replicate. Of the approximately seven thousand languages spoken in the world today, more than half are expected to fall silent within this century. Each one will take its own version of the world with it.</p>`},
+    C:{title:"Extract C",body:`<p>English is, by most measures, the closest thing the world has ever had to a common language. It is the language of international science, global finance, and the internet. For non-native speakers who achieve fluency, it represents access \u2014 to education, to opportunity, to conversations that would otherwise be closed. None of this is trivial. The pragmatic case for English is, on its own terms, overwhelming.</p><p>What is less often acknowledged is the cost this dominance imposes \u2014 not only on speakers of minority languages, who must invest years acquiring a tongue that is not theirs, but on native English speakers themselves. Monolingualism, research increasingly suggests, is a cognitive narrowing. The effort of moving between two languages \u2014 of reaching for a word that does not map neatly onto its equivalent, of thinking in a structure that forces different distinctions \u2014 exercises the mind in ways that never having to do so does not. English speakers, having inherited fluency as a birthright, are frequently spared this friction. That ease, it turns out, may come at a price.</p><p>There is something quietly ironic about this. The language that has come to dominate global communication may be producing, in its native speakers, a subtle disadvantage: the very smoothness of their English makes the discomfort of genuine translation easy to avoid. They can get by without it. Whether \u2018getting by\u2019 and \u2018thinking well\u2019 are the same thing is a question worth sitting with.</p>`},
+    D:{title:"Extract D",body:`<p>The linguist Noam Chomsky proposed in the 1960s that human beings are born with an innate capacity for language \u2014 a set of structural principles so fundamental that they underlie every known human tongue. What varies between languages, on this account, is surface detail. What stays constant is the deep architecture. Children, Chomsky argued, could not possibly acquire language from exposure alone without some built-in framework to guide them. The speed and accuracy with which they do so seemed to require it.</p><p>Subsequent research has both complicated and supported this picture. What has proven difficult to challenge is the role of timing. Children who are exposed to a language before the age of roughly seven acquire it, given sufficient input, with near-native fluency and without formal instruction. The same children, exposed to the same language a decade later, work harder and achieve less. The window \u2014 often called the critical period \u2014 is not a myth. It is one of the most robustly replicated findings in the study of how minds acquire language.</p><p>What happens after the window closes is, in its own way, equally interesting. Adult learners do not simply perform a slower version of what children do. Brain imaging studies show that late learners activate different neural regions when processing their second language \u2014 regions associated with conscious effort and problem-solving rather than the automatic, intuitive processing that characterises native-language use. They are not failing to do what children do. They are doing something else entirely.</p>`}
+  },
+  questions:[
+    {id:"s2q1",text:"21. Which writer acknowledges that a dominant form of language brings genuine advantages, but at a cost?",answer:"C",
+      explanation:"Extract C opens by acknowledging English \u2018represents access \u2014 to education, to opportunity\u2019 and that \u2018the pragmatic case for English is overwhelming.\u2019 But it then argues this dominance \u2018imposes a cost.\u2019 Extract A is the main distractor: A also notes English brought advantages, but A is a personal narrative about one person\u2019s childhood; C makes a systematic argument about global language dominance and its costs."},
+    {id:"s2q2",text:"22. Which writer argues that the language you speak affects what you are able to notice?",answer:"B",
+      explanation:"Extract B opens: \u2018Languages determine what parts of the world you are able to see.\u2019 It provides evidence: colour perception, spatial orientation, and experience of time all differ measurably depending on the language spoken. Extract D also argues language shapes the mind, but D explains how language is acquired; B explains how the language you already speak shapes what your mind can perceive."},
+    {id:"s2q3",text:"23. Which writer suggests that a language can become hidden rather than truly disappear?",answer:"A",
+      explanation:"In the final paragraph, the writer discovers the language \u2018had not gone as quiet inside me as I had assumed.\u2019 It surfaced in dreams and under strong emotion: \u2018it had not disappeared. It had simply been waiting.\u2019 Extract B also discusses language loss, but B discusses language death in communities; A describes the writer\u2019s own language becoming hidden within herself, not dying."},
+    {id:"s2q4",text:"24. Which writer explains that children take in language through experience rather than being taught it directly?",answer:"D",
+      explanation:"Extract D states that children exposed to a language before age seven acquire it \u2018with near-native fluency and without formal instruction\u2019 given sufficient input. Acquisition happens through exposure, not direct teaching. Extract A also describes childhood language immersion, but A describes one person\u2019s experience; D explains this as a general, research-backed principle about all children."},
+    {id:"s2q5",text:"25. Which writer describes feeling that two languages do not hold equal weight in their own mind?",answer:"A",
+      explanation:"The writer describes discovering that \u2018the two languages had never felt equal\u2019: English was the language she used to think; the other was the language she used to perform. This inner imbalance is a form of disadvantage felt within her own mind. Extract C also describes a language-related disadvantage, but C\u2019s disadvantage affects English native speakers (they miss cognitive friction); A\u2019s is the opposite \u2014 a bilingual speaker feeling her two languages unequally."},
+    {id:"s2q6",text:"26. Which writer makes the surprising claim that people who speak only one language may be missing out?",answer:"C",
+      explanation:"Extract C argues that monolingualism is \u2018a cognitive narrowing\u2019 and that English speakers \u2018spared the friction\u2019 of translation may face a \u2018subtle disadvantage.\u2019 This reverses the expected assumption: the group most associated with language dominance may be losing something. Students who read only the first paragraph of C will miss this \u2014 the argument only becomes clear by the second and third paragraphs."},
+    {id:"s2q7",text:"27. Which writer explains that learning a language later in life involves a different process than learning it as a child?",answer:"D",
+      explanation:"Extract D\u2019s final paragraph explains that adult learners \u2018activate different neural regions \u2014 regions associated with conscious effort and problem-solving rather than automatic, intuitive processing.\u2019 They are \u2018not doing what children do. They are doing something else entirely.\u2019 Extract C also mentions adults and language, but C describes what monolinguals lack; D describes what late learners do differently neurologically."},
+    {id:"s2q8",text:"28. Which writer provides specific examples of the ways language shapes how the mind works?",answer:"B",
+      explanation:"Extract B provides three concrete examples: speakers with more colour terms distinguish shades others cannot; communities using cardinal directions maintain orientation that egocentric-language speakers find hard to replicate; the differences are described as \u2018structural, not trivial.\u2019 Extract A also shows language shaping inner experience, but A offers one person\u2019s experience as a single case; B offers multiple research-backed examples across different domains."},
+    {id:"s2q9",text:"29. Which writer uses an ironic observation to challenge the assumption that language dominance has only winners?",answer:"C",
+      explanation:"The final paragraph of Extract C observes that the language dominating global communication \u2018may be producing, in its native speakers, a subtle disadvantage.\u2019 The smoothness of their English makes translation easy to avoid. This is ironic: the winners of language dominance may have lost something the so-called losers retained. Students must identify both the irony and understand that it reverses the assumption that dominance produces only winners."},
+    {id:"s2q10",text:"30. Which writer describes how adult speakers of a second language adapt when they can no longer learn it the way children do?",answer:"D",
+      explanation:"Extract D\u2019s final paragraph explains that adult learners use different brain regions \u2014 regions associated with conscious effort and problem-solving \u2014 rather than the automatic processing of native speakers. They compensate through deliberate cognitive strategies. This is Q27\u2019s companion: Q27 asks about the different process; Q30 asks about how adults adapt through that different process."}
+  ]
+};
+
+function pickTest(cls, setNum){
+  st.classType = cls;
+  st.setNum    = setNum;
+
+  // reset all buttons
+  ['btn-oc-s1','btn-oc-s2','btn-sel-s1','btn-sel-s2'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.remove('selected');
+  });
+  ['col-oc','col-sel'].forEach(function(id){
+    var el = document.getElementById(id);
+    if(el) el.classList.remove('selected');
+  });
+
+  // highlight selected button and column
+  var btnId = cls==='OC'
+    ? (setNum===1 ? 'btn-oc-s1' : 'btn-oc-s2')
+    : (setNum===1 ? 'btn-sel-s1' : 'btn-sel-s2');
+  var colId = cls==='OC' ? 'col-oc' : 'col-sel';
+  var btn = document.getElementById(btnId);
+  var col = document.getElementById(colId);
+  if(btn) btn.classList.add('selected');
+  if(col) col.classList.add('selected');
+
+  checkReady();
+}
+
+document.getElementById('student-name').addEventListener('input', checkReady);
+
+function checkReady(){
+  var name = document.getElementById('student-name').value.trim();
+  var ready = name.length > 0 && st.classType !== null && st.setNum !== null;
+  document.getElementById('start-btn').disabled = !ready;
+}
+
+function startExam(){
+  st.name = document.getElementById('student-name').value.trim();
+  st.scores={};st.gapFilled={};st.mcqSel={};st.allItems=[];
+  if(st.classType==='OC'){
+    if(st.setNum===1){ renderExtract('oc1',OC_SET1); startTimer('oc1',OC_SET1.timerSecs,function(){submitSet('oc1');}); showScreen('screen-oc1'); }
+    else             { renderGap(); startTimer('oc2',OC_SET2.timerSecs,function(){submitSet('oc2');}); showScreen('screen-oc2'); }
+  } else {
+    if(st.setNum===1){ renderPoem(); startTimer('sel1',SEL_SET1.timerSecs,function(){submitSet('sel1');}); showScreen('screen-sel1'); }
+    else             { renderExtract('sel2',SEL_SET2); startTimer('sel2',SEL_SET2.timerSecs,function(){submitSet('sel2');}); showScreen('screen-sel2'); }
+  }
+}
+
+// ══════════════════════
+// PASSWORD
+// ══════════════════════
+function showPwModal(){
+  document.getElementById('pw-input').value='';
+  document.getElementById('pw-error').textContent='';
+  document.getElementById('pw-modal').classList.add('show');
+  setTimeout(()=>document.getElementById('pw-input').focus(),80);
+}
+function closePwModal(){document.getElementById('pw-modal').classList.remove('show');}
+function checkPw(){
+  if(document.getElementById('pw-input').value==='2355'){
+    closePwModal();
+    renderTeacher('OC','t-oc');renderTeacher('Selective','t-sel');
+    showScreen('screen-teacher');
+  } else {
+    document.getElementById('pw-error').textContent='Incorrect password. Try again.';
+    document.getElementById('pw-input').value='';
+    document.getElementById('pw-input').focus();
+  }
+}
+
+// ══════════════════════
+// EXTRACT RENDER
+// ══════════════════════
+function renderExtract(key,data){
+  const tabBar=document.getElementById(key+'-tabs');
+  tabBar.innerHTML='';let first=true;
+  Object.keys(data.extracts).forEach(letter=>{
+    const btn=document.createElement('button');
+    btn.className='tab-btn'+(first?' active':'');btn.textContent='Extract '+letter;
+    btn.onclick=()=>{
+      tabBar.querySelectorAll('.tab-btn').forEach((b,i)=>b.classList.toggle('active',Object.keys(data.extracts)[i]===letter));
+      renderExtractPassage(key,letter,data);
+    };
+    tabBar.appendChild(btn);first=false;
+  });
+  renderExtractPassage(key,'A',data);
+  const ri=document.getElementById(key+'-ri');if(ri)ri.textContent=data.rightInstruction;
+  const ql=document.getElementById(key+'-qs');ql.innerHTML='';
+  data.questions.forEach(q=>{
+    const r=document.createElement('div');r.className='q-row';
+    r.innerHTML=`<div class="q-text">${q.text}</div>
+      <select class="q-select" id="${q.id}-s">
+        <option value="">—</option><option>A</option><option>B</option><option>C</option><option>D</option>
+      </select>`;
+    ql.appendChild(r);
+  });
+}
+function renderExtractPassage(key,letter,data){
+  const ext=data.extracts[letter];
+  document.getElementById(key+'-passage').innerHTML=
+    `<div class="instruction-text">Read the extracts using the tabs above, then answer the questions on the right.</div>
+     <div class="passage-title">${ext.title}</div><div class="passage-body">${ext.body}</div>`;
+}
+
+// ══════════════════════
+// GAP RENDER
+// ══════════════════════
+function renderGap(){
+  const d=OC_SET2;st.gapFilled={};
+  let h=`<div class="instruction-text">${d.instruction}</div><div class="passage-title">${d.title}</div><div class="passage-body">`;
+  d.passages.forEach(p=>{h+='<p>'+p.replace(/\{([A-F])\}/g,(_,l)=>`<span class="gap-label" id="gl-${l}">(${l}) …………</span>`)+'</p>';});
+  h+='</div>';
+  document.getElementById('oc2-passage').innerHTML=h;
+  const ol=document.getElementById('oc2-options');ol.innerHTML='';
+  d.options.forEach(o=>{
+    const c=document.createElement('div');c.className='option-card';c.id='opt-'+o.id;
+    c.textContent=o.text;c.draggable=true;c.dataset.id=o.id;c.dataset.text=o.text;
+    c.addEventListener('dragstart',e=>{st.drag={id:o.id,text:o.text,fromGap:null};e.target.classList.add('dragging');});
+    c.addEventListener('dragend',e=>e.target.classList.remove('dragging'));
+    ol.appendChild(c);
+  });
+  const gl=document.getElementById('oc2-gaps');gl.innerHTML='';
+  Object.keys(d.answers).forEach(letter=>{
+    const row=document.createElement('div');row.className='gap-row-wrap';
+    row.innerHTML=`<div class="gap-row-label">Gap ${letter}</div>
+      <div class="drop-zone" id="dz-${letter}" data-gap="${letter}">
+        <span class="placeholder-txt">Drop here…</span>
+        <span class="filled-text"></span>
+        <button class="remove-btn" onclick="removeGap('${letter}')">✕</button>
+      </div>`;
+    gl.appendChild(row);
+    const dz=row.querySelector('.drop-zone');
+    dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag-over');});
+    dz.addEventListener('dragleave',()=>dz.classList.remove('drag-over'));
+    dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag-over');dropToGap(letter);});
+  });
+}
+function dropToGap(letter){
+  const{id,text,fromGap}=st.drag;if(!id)return;
+  if(st.gapFilled[letter])returnPool(st.gapFilled[letter]);
+  if(fromGap&&fromGap!==letter)clearGap(fromGap,false);
+  fillGap(letter,id,text);markUsed(id);
+  st.drag={id:null,text:null,fromGap:null};
+}
+function fillGap(letter,id,text){
+  st.gapFilled[letter]=id;
+  const dz=document.getElementById('dz-'+letter);
+  dz.classList.add('filled');dz.querySelector('.placeholder-txt').style.display='none';
+  const ft=dz.querySelector('.filled-text');ft.textContent=text;ft.style.display='block';
+  const gl=document.getElementById('gl-'+letter);
+  if(gl){gl.textContent=`(${letter}) ${text.length>32?text.slice(0,32)+'…':text}`;gl.classList.add('filled');}
+}
+function clearGap(l,rp=true){
+  const id=st.gapFilled[l];if(!id)return;
+  if(rp)returnPool(id);delete st.gapFilled[l];
+  const dz=document.getElementById('dz-'+l);
+  dz.classList.remove('filled');dz.querySelector('.placeholder-txt').style.display='';
+  const ft=dz.querySelector('.filled-text');ft.textContent='';ft.style.display='none';
+  const gl=document.getElementById('gl-'+l);
+  if(gl){gl.textContent=`(${l}) …………`;gl.classList.remove('filled');}
+}
+function removeGap(l){clearGap(l,true);}
+function markUsed(id){const c=document.getElementById('opt-'+id);if(c)c.classList.add('used');}
+function returnPool(id){const c=document.getElementById('opt-'+id);if(c)c.classList.remove('used');}
+
+// ══════════════════════
+// POEM RENDER
+// ══════════════════════
+function renderPoem(){
+  const d=SEL_SET1;
+  document.getElementById('sel1-poem').innerHTML=
+    `<div class="passage-title">${d.poemTitle}</div>
+     <div class="poem-text">${d.poemLines.map(l=>l||'').join('<br>')}</div>`;
+  const ql=document.getElementById('sel1-qs');ql.innerHTML='';
+  d.questions.forEach((q,i)=>{
+    const b=document.createElement('div');b.className='mcq-block';
+    b.innerHTML=`<div class="mcq-q-num">Question ${i+1}</div>
+      <div class="mcq-q-text">${q.text}</div>
+      <div class="mcq-options">${q.options.map((opt,oi)=>{
+        const l=['A','B','C','D'][oi];
+        return`<div class="mcq-option" id="${q.id}-o${l}" onclick="pickMCQ('${q.id}','${l}')">
+          <span class="mcq-opt-letter">${l}</span><span>${opt}</span></div>`;
+      }).join('')}</div>`;
+    ql.appendChild(b);
+  });
+}
+function pickMCQ(qid,letter){
+  st.mcqSel[qid]=letter;
+  const q=SEL_SET1.questions.find(x=>x.id===qid);if(!q)return;
+  q.options.forEach((_,oi)=>{
+    const l=['A','B','C','D'][oi];
+    document.getElementById(qid+'-o'+l)?.classList.toggle('selected',l===letter);
+  });
+}
+
+// ══════════════════════
+// TIMER
+// ══════════════════════
+function startTimer(key,secs,onExpire){
+  stopTimer(key);let rem=secs;updTimer(key,rem);
+  st.timers[key]=setInterval(()=>{rem--;updTimer(key,rem);if(rem<=0){stopTimer(key);onExpire();}},1000);
+}
+function stopTimer(key){if(st.timers[key]){clearInterval(st.timers[key]);delete st.timers[key];}}
+function updTimer(key,secs){
+  const el=document.getElementById(key+'-timer');if(!el)return;
+  if(!st.timerVis[key]){el.textContent='--:--';return;}
+  el.textContent=`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+  el.classList.toggle('warning',secs<=30);
+}
+function toggleTimerVis(key){st.timerVis[key]=!st.timerVis[key];updTimer(key,0);}
+
+// ══════════════════════
+// FLAG
+// ══════════════════════
+function toggleFlag(key){
+  st.flags[key]=!st.flags[key];
+  document.getElementById(key+'-flag')?.classList.toggle('flagged',!!st.flags[key]);
+}
+
+// ══════════════════════
+// SUBMIT
+// ══════════════════════
+function submitSet(key){
+  stopTimer(key);
+  let score,items,nextAction;
+  if(key==='oc1'){
+    score=scoreExtract(OC_SET1);items=reviewExtract(OC_SET1);st.scores.s1=score;
+  } else if(key==='oc2'){
+    score=scoreGap();items=reviewGap();st.scores.s2=score;
+  } else if(key==='sel1'){
+    score=scorePoem();items=reviewPoem();st.scores.s1=score;
+  } else {
+    score=scoreExtract(SEL_SET2);items=reviewExtract(SEL_SET2);st.scores.s2=score;
+  }
+  nextAction='back-home';
+  st.allItems.push(...items);
+  showReview(key,score,items,nextAction);
+}
+
+function scoreExtract(d){
+  let c=0;d.questions.forEach(q=>{if(document.getElementById(q.id+'-s')?.value===q.answer)c++;});
+  return{correct:c,total:d.questions.length};
+}
+function scoreGap(){
+  let c=0;Object.keys(OC_SET2.answers).forEach(l=>{if(st.gapFilled[l]===OC_SET2.answers[l])c++;});
+  return{correct:c,total:Object.keys(OC_SET2.answers).length};
+}
+function scorePoem(){
+  let c=0;SEL_SET1.questions.forEach(q=>{if(st.mcqSel[q.id]===q.answer)c++;});
+  return{correct:c,total:SEL_SET1.questions.length};
+}
+
+function reviewExtract(d){
+  return d.questions.map((q,i)=>{
+    const g=document.getElementById(q.id+'-s')?.value||'';
+    return{num:i+1,text:q.text,given:g||'(no answer)',correct:q.answer,
+      isCorrect:g===q.answer,explanation:q.explanation,type:'extract'};
+  });
+}
+function reviewGap(){
+  return Object.keys(OC_SET2.answers).map((l,i)=>{
+    const aid=OC_SET2.answers[l];
+    const ct=OC_SET2.options.find(o=>o.id===aid)?.text||'—';
+    const gid=st.gapFilled[l];
+    const gt=gid?OC_SET2.options.find(o=>o.id===gid)?.text:'(no answer)';
+    return{num:i+1,text:`Gap ${l}`,given:gt||'(no answer)',correct:ct,
+      isCorrect:gid===aid,explanation:OC_SET2.explanations[l],type:'gap'};
+  });
+}
+function reviewPoem(){
+  return SEL_SET1.questions.map((q,i)=>{
+    const g=st.mcqSel[q.id]||'';
+    const ABCD=['A','B','C','D'];
+    const gt=g?`${g}: ${q.options[ABCD.indexOf(g)]}`:'(no answer)';
+    const ct=`${q.answer}: ${q.options[ABCD.indexOf(q.answer)]}`;
+    return{num:i+1,text:q.text,given:gt,correct:ct,
+      isCorrect:g===q.answer,explanation:q.explanation,type:'mcq'};
+  });
+}
+
+// ══════════════════════
+// REVIEW SCREEN
+// ══════════════════════
+const LABELS={oc1:'OC Set 1 — Extract Matching',oc2:'OC Set 2 — Gap Text',
+  sel1:'Selective Set 1 — Poetry MCQ',sel2:'Selective Set 2 — Extract Matching'};
+let curRevItems=[], curRevTab='review';
+
+function showReview(key,score,items,nextAction){
+  document.getElementById('rev-title').textContent=LABELS[key]+' — Review';
+  document.getElementById('rev-score-hdr').textContent=`Score: ${score.correct} / ${score.total}`;
+  curRevItems=items;st.reviewNext=nextAction;
+  const nb=document.getElementById('rev-next-btn');
+  nb.textContent='↩ Back to Home';
+  switchRevTab('review');showScreen('screen-review');
+}
+function switchRevTab(tab){
+  curRevTab=tab;
+  document.getElementById('rev-tab-review').classList.toggle('active',tab==='review');
+  document.getElementById('rev-tab-solution').classList.toggle('active',tab==='solution');
+  renderRevBody();
+}
+function renderRevBody(){
+  const body=document.getElementById('rev-body');body.innerHTML='';
+  curRevItems.forEach(item=>{
+    const div=document.createElement('div');
+    div.className='rev-item '+(item.isCorrect?'rev-correct':'rev-wrong');
+    if(curRevTab==='review'){
+      div.innerHTML=`
+        <div class="rev-item-top">
+          <div class="rev-q-text">Q${item.num}. ${item.text}</div>
+          <span class="rev-badge ${item.isCorrect?'correct':'wrong'}">${item.isCorrect?'✅ Correct':'❌ Wrong'}</span>
+        </div>
+        <div class="rev-answers">
+          <span class="lbl">Your answer: </span>
+          <span class="${item.isCorrect?'ca':'wa'}">${item.given}</span>
+          ${!item.isCorrect?`<br><span class="lbl">Correct answer: </span><span class="ca">${item.correct}</span>`:''}
+        </div>`;
+    } else {
+      div.innerHTML=`
+        <div class="rev-item-top">
+          <div class="rev-q-text">Q${item.num}. ${item.text}</div>
+          <span class="rev-badge ${item.isCorrect?'correct':'wrong'}">${item.isCorrect?'✅':'❌'}</span>
+        </div>
+        <div class="rev-answers"><span class="lbl">Correct answer: </span><span class="ca">${item.correct}</span></div>
+        <div class="solution-box"><div class="sol-title">💡 Explanation</div>${item.explanation}</div>`;
+    }
+    body.appendChild(div);
+  });
+}
+function proceedFromReview(){
+  const a=st.reviewNext;
+  if(a==='back-results'){showScreen('screen-results'); return;}
+  // all sets: save and go back to landing
+  saveResults();
+  restart();
+}
+
+// ══════════════════════
+// FINAL RESULTS
+// ══════════════════════
+function showFinalResults(){
+  document.getElementById('res-name').textContent=`${st.name} · ${st.classType} · Set ${st.setNum}`;
+  const s1=st.scores.s1||{correct:0,total:0};
+  const s2=st.scores.s2||{correct:0,total:0};
+  let g='';
+  if(st.scores.s1){
+    const l1=st.classType==='OC'?'Extract Matching':'Poetry MCQ';
+    g+=`<div class="score-block"><div class="sb-set">Set 1</div><div class="sb-score">${s1.correct}/${s1.total}</div><div class="sb-label">${l1}</div></div>`;
+  }
+  if(st.scores.s2){
+    const l2=st.classType==='OC'?'Gap Text':'Extract Matching';
+    g+=`<div class="score-block"><div class="sb-set">Set 2</div><div class="sb-score">${s2.correct}/${s2.total}</div><div class="sb-label">${l2}</div></div>`;
+  }
+  document.getElementById('res-grid').innerHTML=g;
+  const only=st.scores.s1||st.scores.s2;
+  const hasBoth=st.scores.s1&&st.scores.s2;
+  document.getElementById('res-total').textContent=hasBoth
+    ?`${s1.correct+s2.correct} / ${s1.total+s2.total}`
+    :`${only.correct} / ${only.total}`;
+  showScreen('screen-results');
+}
+function showFullReview(){
+  curRevItems=st.allItems;st.reviewNext='back-results';
+  document.getElementById('rev-title').textContent='Full Review';
+  document.getElementById('rev-score-hdr').textContent='';
+  document.getElementById('rev-next-btn').textContent='← Back to Results';
+  switchRevTab('review');showScreen('screen-review');
+}
+function restart(){
+  document.getElementById('student-name').value='';
+  st.classType=null; st.setNum=null; st.scores={};
+  ['btn-oc-s1','btn-oc-s2','btn-sel-s1','btn-sel-s2'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.classList.remove('selected');
+  });
+  ['col-oc','col-sel'].forEach(function(id){
+    var el=document.getElementById(id); if(el) el.classList.remove('selected');
+  });
+  document.getElementById('start-btn').disabled=true;
+  showScreen('screen-landing');
+}
+
+// ══════════════════════
+// SAVE / TEACHER
+// ══════════════════════
+function saveResults(){
+  const s1=st.scores.s1||{correct:0,total:0};
+  const s2=st.scores.s2||{correct:0,total:0};
+  // build per-question detail from allItems
+  const qDetail=st.allItems.map(item=>({
+    num:item.num, text:item.text, correct:item.isCorrect,
+    given:item.given, answer:item.correct, type:item.type
+  }));
+  const rec={
+    name:st.name,classType:st.classType,setNum:st.setNum,
+    set1:st.scores.s1?`${s1.correct}/${s1.total}`:'—',
+    set2:st.scores.s2?`${s2.correct}/${s2.total}`:'—',
+    total:st.scores.s1&&st.scores.s2?`${s1.correct+s2.correct}/${s1.total+s2.total}`:st.scores.s1?`${s1.correct}/${s1.total}`:`${s2.correct}/${s2.total}`,
+    date:new Date().toLocaleString('en-AU'),
+    qDetail
+  };
+  const key='jk_results';
+  const ex=JSON.parse(localStorage.getItem(key)||'[]');
+  ex.push(rec);localStorage.setItem(key,JSON.stringify(ex));
+}
+function renderTeacher(cls,containerId){
+  const allRecs=JSON.parse(localStorage.getItem('jk_results')||'[]');
+  const recs=cls?allRecs.filter(r=>r.classType===cls):allRecs;
+  const el=document.getElementById(containerId);
+  if(!recs.length){el.innerHTML='<div class="no-results">No results yet.</div>';return;}
+  let h=`<table class="results-table"><thead><tr>
+    <th>Name</th><th>Set</th><th>Score</th><th>Date / Time</th>
+    </tr></thead><tbody>`;
+  recs.forEach(r=>{
+    const score=r.setNum===1?r.set1:r.setNum===2?r.set2:r.total;
+    h+=`<tr><td>${r.name}</td><td>Set ${r.setNum||'?'}</td><td><strong>${score}</strong></td><td>${r.date}</td></tr>`;
+  });
+  h+='</tbody></table>';el.innerHTML=h;
+}
+function switchTeacherTab(tab){
+  document.getElementById('tt-students').classList.toggle('active',tab==='students');
+  document.getElementById('tt-questions').classList.toggle('active',tab==='questions');
+  document.getElementById('tp-students').classList.toggle('active',tab==='students');
+  document.getElementById('tp-questions').classList.toggle('active',tab==='questions');
+  if(tab==='questions') renderQStats();
+}
+
+function renderQStats(){
+  const allRecs=JSON.parse(localStorage.getItem('jk_results')||'[]');
+  const container=document.getElementById('q-stats-container');
+  if(!allRecs.length){container.innerHTML='<div class="no-results">No student data yet.</div>';return;}
+
+  // Group by classType + setNum
+  const groups={};
+  allRecs.forEach(r=>{
+    if(!r.qDetail||!r.qDetail.length) return;
+    const key=`${r.classType} · Set ${r.setNum}`;
+    if(!groups[key]) groups[key]={recs:[],qMap:{}};
+    groups[key].recs.push(r);
+    r.qDetail.forEach(q=>{
+      const qkey=q.num+'|'+q.text.slice(0,60);
+      if(!groups[key].qMap[qkey]) groups[key].qMap[qkey]={text:q.text,correct:0,wrong:0,total:0};
+      groups[key].qMap[qkey].total++;
+      if(q.correct) groups[key].qMap[qkey].correct++;
+      else groups[key].qMap[qkey].wrong++;
+    });
+  });
+
+  let html='';
+  Object.keys(groups).sort().forEach(gkey=>{
+    const g=groups[gkey];
+    const studentCount=g.recs.length;
+    html+=`<div class="q-stats-section">
+      <h3>${gkey} &nbsp;<span style="font-weight:400;color:#888">(${studentCount} student${studentCount!==1?'s':''})</span></h3>`;
+    let qNum=0;
+    Object.values(g.qMap).forEach(q=>{
+      qNum++;
+      const pct=q.total>0?Math.round(q.correct/q.total*100):0;
+      const barColor=pct>=80?'#2E7D32':pct>=50?'#F5A623':'#C62828';
+      html+=`<div class="q-stat-row">
+        <div class="q-stat-num">Q${qNum}</div>
+        <div class="q-stat-text">${q.text}</div>
+        <div class="q-stat-bar-wrap">
+          <div class="q-stat-bar-bg"><div class="q-stat-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+          <div class="q-stat-pct" style="color:${barColor}">${pct}%</div>
+        </div>
+        <div class="q-stat-count">${q.correct} / ${q.total} correct</div>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  container.innerHTML=html;
+}
+
+function clearAll(){
+  if(!confirm('Clear ALL student results? This cannot be undone.'))return;
+  localStorage.removeItem('jk_results');
+  renderTeacher('OC','t-oc');renderTeacher('Selective','t-sel');
+  const c=document.getElementById('q-stats-container');
+  if(c) c.innerHTML='<div class="no-results">No student data yet.</div>';
+}
+</script>
+</body>
+</html>
